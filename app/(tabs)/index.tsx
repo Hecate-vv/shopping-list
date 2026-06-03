@@ -1,98 +1,178 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import {
+  Alert,
+  Button,
+  SafeAreaView,
+  SectionList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function App() {
+  const [products, setProducts] = useState<any[]>([]);
 
-export default function HomeScreen() {
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [shop, setShop] = useState('');
+
+  const [shopFilter, setShopFilter] = useState('');
+
+  const addProduct = () => {
+    if (name.trim() === '' || price.trim() === '' || shop.trim() === '') {
+      Alert.alert('Błąd', 'Uzupełnij wszystkie pola');
+      return;
+    }
+
+    const newProduct = {
+      id: Date.now().toString(),
+      name: name,
+      price: price,
+      shop: shop,
+      bought: false,
+    };
+
+    setProducts([newProduct, ...products]);
+
+    setName('');
+    setPrice('');
+    setShop('');
+  };
+
+  const deleteProduct = (id: string) => {
+    const newList = products.filter((item) => item.id !== id);
+    setProducts(newList);
+  };
+
+  const toggleBought = (id: string) => {
+    const updatedList = products.map((item) => {
+      if (item.id === id) {
+        return { ...item, bought: !item.bought };
+      }
+      return item;
+    });
+
+    setProducts(updatedList);
+  };
+
+  const filteredProducts = products.filter((item) => {
+    if (shopFilter.trim() === '') return true;
+    return item.shop.toLowerCase().includes(shopFilter.toLowerCase());
+  });
+
+  const toBuy = filteredProducts.filter((item) => item.bought === false);
+  const bought = filteredProducts.filter((item) => item.bought === true);
+
+  const sections = [
+    { title: 'Do kupienia', data: toBuy },
+    { title: 'Kupione', data: bought },
+  ];
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Lista zakupów</Text>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <Text style={styles.subtitle}>Dodaj produkt</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nazwa produktu"
+        placeholderTextColor="#666"
+        value={name}
+        onChangeText={setName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Cena"
+        placeholderTextColor="#666"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Sklep"
+        placeholderTextColor="#666"
+        value={shop}
+        onChangeText={setShop}
+      />
+
+      <Button title="Dodaj produkt" onPress={addProduct} />
+
+      <View style={styles.filterBox}>
+        <Text style={styles.subtitle}>Filtr po sklepie</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Wpisz nazwę sklepu"
+          value={shopFilter}
+          onChangeText={setShopFilter}
+        />
+      </View>
+
+      {filteredProducts.length === 0 ? (
+        <Text style={styles.emptyText}>Brak produktów na liście</Text>
+      ) : (
+        <SectionList
+          sections={sections}
+          keyExtractor={(item) => item.id}
+          renderSectionHeader={({ section }) =>
+            section.data.length > 0 ? (
+              <Text style={styles.sectionHeader}>{section.title}</Text>
+            ) : null
+          }
+          renderItem={({ item }) => (
+            <View style={styles.productBox}>
+              <Text>Nazwa: {item.name}</Text>
+              <Text>Cena: {item.price} zł</Text>
+              <Text>Sklep: {item.shop}</Text>
+              <Text>
+                Status: {item.bought ? 'Kupione' : 'Do kupienia'}
+              </Text>
+
+              <Button
+                title={item.bought ? 'Cofnij' : 'Kupione'}
+                onPress={() => toggleBought(item.id)}
+              />
+
+              <Button
+                title="Usuń"
+                color="red"
+                onPress={() => deleteProduct(item.id)}
+              />
+            </View>
+          )}
+        />
+      )}
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: { flex: 1, padding: 20, backgroundColor: '#fff', },
+  title: { fontSize: 28, fontWeight: 'bold', textAlign: 'center' },
+  subtitle: { fontSize: 18, marginTop: 10 },
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    backgroundColor: '#fff',
+    color: '#000',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  filterBox: { marginTop: 20 },
+  emptyText: { textAlign: 'center', marginTop: 20 },
+  sectionHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  productBox: {
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 10,
   },
 });
