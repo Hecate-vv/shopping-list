@@ -8,10 +8,13 @@ import {
     TextInput,
     View,
 } from 'react-native';
+import { useAppContext } from './app-context';
 
 export default function LoginScreen() {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+
+  const { loginUser } = useAppContext();
 
   const handleLogin = () => {
     if (login.trim() === '' || password.trim() === '') {
@@ -19,6 +22,7 @@ export default function LoginScreen() {
       return;
     }
 
+    loginUser();
     router.replace('/home');
   };
 
@@ -43,10 +47,7 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <Button
-        title="Zaloguj"
-        onPress={handleLogin}
-      />
+      <Button title="Zaloguj" onPress={handleLogin} />
     </View>
   );
 }

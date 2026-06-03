@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Alert,
     Button,
@@ -8,11 +8,20 @@ import {
     TextInput,
     View,
 } from 'react-native';
+import { useAppContext } from './app-context';
 
 export default function AddProductScreen() {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [shop, setShop] = useState('');
+
+  const { isLoggedIn, addProduct } = useAppContext();
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.replace('/');
+    }
+  }, [isLoggedIn]);
 
   const saveProduct = () => {
     if (name.trim() === '' || price.trim() === '' || shop.trim() === '') {
@@ -20,7 +29,9 @@ export default function AddProductScreen() {
       return;
     }
 
-    Alert.alert('Sukces', 'Produkt został zapisany');
+    addProduct(name, price, shop);
+
+    Alert.alert('Sukces', 'Produkt został dodany');
     router.back();
   };
 
