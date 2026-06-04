@@ -1,12 +1,45 @@
-import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import AppProvider from './context/AppContext';
+
+import AddProductScreen from './screens/AddProductScreen';
+import HomeScreen from './screens/HomeScreen';
+import LoginScreen from './screens/LoginScreen';
+import ProductDetailsScreen from './screens/ProductDetailsScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <AppProvider>
-      <View style={{ flex: 1, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: '#000', fontSize: 24 }}>Provider działa</Text>
-      </View>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ title: 'Logowanie' }}
+          />
+
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ title: 'Lista produktów' }}
+          />
+
+          <Stack.Screen
+            name="AddProduct"
+            component={AddProductScreen}
+            options={{ title: 'Dodaj produkt' }}
+          />
+
+          <Stack.Screen
+            name="ProductDetails"
+            component={ProductDetailsScreen}
+            options={{ title: 'Szczegóły produktu' }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </AppProvider>
   );
 }
