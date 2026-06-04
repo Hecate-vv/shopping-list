@@ -1,12 +1,12 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    Button,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 import type { RootStackParamList } from '../App';
@@ -20,7 +20,7 @@ export default function AddProductScreen({ navigation }: Props) {
   const [price, setPrice] = useState('');
   const [shop, setShop] = useState('');
 
-  const { isLoggedIn, addProduct } = useAppContext();
+  const { isLoggedIn, products, addProduct } = useAppContext();
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -29,16 +29,26 @@ export default function AddProductScreen({ navigation }: Props) {
   }, [isLoggedIn]);
 
   const saveProduct = () => {
-    if (
-      name.trim() === '' ||
-      description.trim() === '' ||
-      price.trim() === '' ||
-      shop.trim() === ''
-    ) {
-      Alert.alert('Błąd', 'Uzupełnij wszystkie pola');
-      return;
-    }
+  if (
+    name.trim() === '' ||
+    description.trim() === '' ||
+    price.trim() === '' ||
+    shop.trim() === ''
+  ) {
+    Alert.alert('Błąd', 'Uzupełnij wszystkie pola');
+    return;
+  }
 
+  const productExists = products.some(
+    (product) =>
+      product.name.trim().toLowerCase() === name.trim().toLowerCase() &&
+      product.shop.trim().toLowerCase() === shop.trim().toLowerCase()
+  );
+
+  if (productExists) {
+    Alert.alert('Błąd', 'Taki produkt z tego sklepu już istnieje');
+    return;
+  }
     addProduct(name, description, price, shop);
 
     Alert.alert('Sukces', 'Produkt został dodany');
