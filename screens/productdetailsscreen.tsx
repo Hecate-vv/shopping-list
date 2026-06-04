@@ -1,4 +1,3 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
 import {
   Button,
@@ -7,12 +6,10 @@ import {
   View,
 } from 'react-native';
 
-import type { RootStackParamList } from '../App';
 import { useAppContext } from '../context/AppContext';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ProductDetails'>;
 
-export default function ProductDetailsScreen({ navigation, route }: Props) {
+export default function ProductDetailsScreen({ navigation, route }: any) {
   const { isLoggedIn } = useAppContext();
 
   useEffect(() => {
@@ -21,26 +18,29 @@ export default function ProductDetailsScreen({ navigation, route }: Props) {
     }
   }, [isLoggedIn]);
 
-  const product = route.params;
-
   if (
-    !product ||
-    !product.name ||
-    !product.description ||
-    !product.price ||
-    !product.shop
-  ) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Błąd</Text>
-        <Text style={styles.text}>
-          Nie udało się załadować danych produktu.
-        </Text>
+  !route.params ||
+  !route.params.name ||
+  !route.params.description ||
+  !route.params.price ||
+  !route.params.shop
+) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Błąd</Text>
 
-        <Button title="Wróć" onPress={() => navigation.goBack()} />
-      </View>
-    );
-  }
+      <Text style={styles.text}>
+        Nie udało się załadować danych produktu.
+      </Text>
+
+      <Button
+        title="Wróć"
+        onPress={() => navigation.goBack()}
+      />
+    </View>
+  );
+}
+const product = route.params;
 
   return (
     <View style={styles.container}>

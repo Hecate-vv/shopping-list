@@ -1,4 +1,4 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -9,12 +9,9 @@ import {
   View,
 } from 'react-native';
 
-import type { RootStackParamList } from '../App';
 import { useAppContext } from '../context/AppContext';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AddProduct'>;
-
-export default function AddProductScreen({ navigation }: Props) {
+export default function AddProductScreen({ navigation }: any) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
