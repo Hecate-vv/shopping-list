@@ -26,15 +26,37 @@ export default function AddProductScreen({ navigation }: any) {
   }, [isLoggedIn]);
 
   const saveProduct = () => {
-  if (
-    name.trim() === '' ||
-    description.trim() === '' ||
-    price.trim() === '' ||
-    shop.trim() === ''
-  ) {
-    Alert.alert('Błąd', 'Uzupełnij wszystkie pola');
-    return;
-  }
+  if (name.trim() === '') {
+  Alert.alert(
+    'Brak nazwy produktu',
+    'Wprowadź nazwę produktu.'
+  );
+  return;
+}
+
+if (description.trim() === '') {
+  Alert.alert(
+    'Brak opisu',
+    'Wprowadź opis produktu.'
+  );
+  return;
+}
+
+if (price.trim() === '') {
+  Alert.alert(
+    'Brak ceny',
+    'Wprowadź cenę produktu.'
+  );
+  return;
+}
+
+if (shop.trim() === '') {
+  Alert.alert(
+    'Brak sklepu',
+    'Wprowadź nazwę sklepu.'
+  );
+  return;
+}
 
   const productExists = products.some(
     (product) =>
@@ -54,7 +76,7 @@ export default function AddProductScreen({ navigation }: any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dodaj produkt</Text>
+      <Text style={styles.title}>Dodaj produkt Test</Text>
 
       <TextInput
         style={styles.input}

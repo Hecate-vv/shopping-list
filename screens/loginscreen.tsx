@@ -18,9 +18,27 @@ export default function LoginScreen({ navigation }: any) {
 
   const handleLogin = () => {
     if (login.trim() === '' || password.trim() === '') {
-      Alert.alert('Błąd', 'Podaj login i hasło');
-      return;
-    }
+  Alert.alert('Błąd', 'Podaj login i hasło');
+  return;
+}
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (!emailRegex.test(login.trim())) {
+  Alert.alert(
+    'Nieprawidłowy email',
+    'Proszę wpisz prawidłowy adres email.'
+  );
+  return;
+}
+
+if (password.length < 6) {
+  Alert.alert(
+    'Niepoprawne hasło',
+    'Hasło musi posiadać co najmniej 6 znaków.'
+  );
+  return;
+}
 
     loginUser();
     navigation.replace('Home');
